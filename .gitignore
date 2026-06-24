@@ -1,0 +1,9 @@
+.DS_Store
+
+# Local research and evaluation artifacts
+research/
+clean-arch-review-workspace/
+plan.md
+
+# Packaged release artifacts; attach these to GitHub Releases if needed.
+*.skill
