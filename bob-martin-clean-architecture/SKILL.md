@@ -7,10 +7,10 @@ description: >
   Architecture compliance, dependency-rule validation, layer separation,
   SOLID/modularity review, architectural scoring, refactoring guidance,
   framework/database decoupling, use-case boundary design, or learning Clean
-  Architecture. Supports modular TypeScript, Java, C#, Python, Kotlin, Go, and
-  Ruby codebases. For Python/Pydantic/FastAPI, applies current boundary,
-  validation, serialization, DI, routing, tests, settings, and DTO practices
-  without making framework models the domain by default. In
+  Architecture in Python codebases. Focuses on Python services and applications,
+  especially Pydantic v2, FastAPI, SQLAlchemy-style persistence, dependency
+  injection, routing, tests, settings, and DTO practices without making
+  framework models the domain by default. In
   review mode, produces evidence-based findings, calibrated scoring, positives,
   and priorities. In design/teaching mode, produces canonical layered Clean
   Architecture with entities, interactors, boundaries, controllers, presenters,
@@ -71,6 +71,9 @@ Do not force scoring in design or teaching mode unless the user asks for it.
   `Request`, `Response`, `HTTPException`, middleware, and lifespan code as
   outer-layer delivery/framework details unless there is explicit evidence
   otherwise.
+- Use Python examples and terminology in reports and designs. When an example is
+  useful, prefer `dataclass`, `Protocol`, Pydantic v2 DTOs, FastAPI routers,
+  SQLAlchemy gateways, and pytest-style tests.
 
 ### 2. Classify or Design the Architecture
 
@@ -189,11 +192,11 @@ Default format for architecture design:
 |----------|-------------|-------------------|---------------|
 
 ## Suggested Structure
-- `src/entities/...`
-- `src/use-cases/...`
-- `src/interface-adapters/...`
-- `src/frameworks-drivers/...`
-- `src/main/...`
+- `app/entities/...`
+- `app/use_cases/...`
+- `app/interface_adapters/...`
+- `app/frameworks_drivers/...`
+- `app/main/...`
 
 ## Flow
 1. Actor -> Controller -> Input Boundary -> Use Case Interactor -> Entity.

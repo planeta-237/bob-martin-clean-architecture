@@ -66,30 +66,48 @@ failure modes:
 
 ### Example: Better Payment Orchestration
 
-```typescript
-class ProcessPaymentUseCase {
-  constructor(
-    private readonly orders: OrderRepository,
-    private readonly payments: PaymentGateway,
-    private readonly unitOfWork: UnitOfWork,
-    private readonly outbox: Outbox
-  ) {}
+```python
+from dataclasses import dataclass
 
-  async execute(input: ProcessPaymentInput): Promise<ProcessPaymentOutput> {
-    const order = await this.orders.findById(new OrderId(input.orderId));
-    if (!order) throw new OrderNotFoundError(input.orderId);
 
-    const charge = await this.payments.authorize(order.total, input.paymentToken);
+@dataclass(frozen=True)
+class ProcessPaymentCommand:
+    order_id: str
+    payment_token: str
 
-    await this.unitOfWork.run(async () => {
-      order.markPaymentAuthorized(charge.id);
-      await this.orders.save(order);
-      await this.outbox.add(new PaymentAuthorizedEvent(order.id, charge.id));
-    });
 
-    return { orderId: order.id.value, paymentId: charge.id.value };
-  }
-}
+@dataclass(frozen=True)
+class ProcessPaymentResult:
+    order_id: str
+    payment_id: str
+
+
+class ProcessPaymentUseCase:
+    def __init__(
+        self,
+        orders: "OrderRepository",
+        payments: "PaymentGateway",
+        unit_of_work: "UnitOfWork",
+        outbox: "Outbox",
+    ) -> None:
+        self._orders = orders
+        self._payments = payments
+        self._unit_of_work = unit_of_work
+        self._outbox = outbox
+
+    async def execute(self, command: ProcessPaymentCommand) -> ProcessPaymentResult:
+        order = await self._orders.get(OrderId(command.order_id))
+        if order is None:
+            raise OrderNotFoundError(command.order_id)
+
+        charge = await self._payments.authorize(order.total, PaymentToken(command.payment_token))
+
+        async with self._unit_of_work:
+            order.mark_payment_authorized(charge.id)
+            await self._orders.save(order)
+            await self._outbox.add(PaymentAuthorizedEvent(order.id, charge.id))
+
+        return ProcessPaymentResult(order_id=order.id.value, payment_id=charge.id.value)
 ```
 
 This does not pretend the payment API is part of the database transaction. It

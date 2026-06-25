@@ -84,8 +84,8 @@ class CreateOrderRequest(BaseModel):
 
 - Plain Python classes, dataclasses, or deliberate value-object models.
 - Own invariants: money, quantity, status transitions, ownership, limits.
-- No FastAPI, SQLAlchemy, Django ORM, HTTP request objects, Pydantic settings, or
-  vendor SDK imports.
+- No FastAPI, Starlette, SQLAlchemy ORM/session, HTTP request objects, Pydantic
+  settings, or vendor SDK imports.
 
 ### Use Cases / Interactors
 
@@ -104,7 +104,7 @@ class CreateOrderRequest(BaseModel):
 
 ### Frameworks & Drivers
 
-- FastAPI/Django/Flask routes, SQLAlchemy/Django ORM models, Redis, Celery,
+- FastAPI routes, SQLAlchemy ORM models/sessions, Redis, Celery or task queues,
   external SDK clients, Pydantic settings, and concrete DI wiring live here.
 - Main/composition root wires concrete adapters into interactors.
 
@@ -135,7 +135,7 @@ Risk signals:
 For a Python/Pydantic service, default to this shape:
 
 ```text
-src/
+app/
   entities/
     order.py
     money.py

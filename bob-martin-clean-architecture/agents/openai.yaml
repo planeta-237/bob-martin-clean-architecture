@@ -1,7 +1,7 @@
 interface:
   display_name: "Bob Martin Clean Architecture"
-  short_description: "Design and review canonical Clean Architecture"
-  default_prompt: "Use $bob-martin-clean-architecture to design or review Robert C. Martin's layered Clean Architecture with entities, use cases, interface adapters, frameworks, Python/Pydantic/FastAPI boundaries, dependency direction, and testability."
+  short_description: "Design and review Python Clean Architecture"
+  default_prompt: "Use $bob-martin-clean-architecture to design or review Robert C. Martin's layered Clean Architecture for Python services with entities, use cases, interface adapters, frameworks, Pydantic v2, FastAPI, SQLAlchemy gateways, dependency direction, and testability."
 
 policy:
   allow_implicit_invocation: true

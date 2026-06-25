@@ -80,19 +80,23 @@ Look for these names and variants:
 
 ## Example
 
-```typescript
-// BAD: raw card travels into core and can leak through logs/errors.
-type PaymentInput = {
-  cardNumber: string;
-  cvv: string;
-  amount: number;
-};
+```python
+from dataclasses import dataclass
 
-// BETTER: adapter receives raw card data, tokenizes, then use case sees a safe
-// application-level command.
-type ProcessPaymentCommand = {
-  orderId: string;
-  paymentToken: string;
-  amount: Money;
-};
+from pydantic import BaseModel, Field
+
+
+class PaymentRequest(BaseModel):
+    # Boundary DTO only: do not pass this object into the use case.
+    card_number: str = Field(min_length=12)
+    cvv: str = Field(min_length=3, max_length=4)
+    amount_minor: int = Field(gt=0)
+
+
+@dataclass(frozen=True)
+class ProcessPaymentCommand:
+    # Application command after the adapter tokenizes raw card data.
+    order_id: str
+    payment_token: str
+    amount: "Money"
 ```

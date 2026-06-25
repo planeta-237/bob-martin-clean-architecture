@@ -83,9 +83,9 @@ Review checks:
 Detection examples:
 
 ```bash
-dependency-cruise src --include-only "^src"
-pydeps --show-cycles src/
-mvn dependency:analyze
+pydeps --show-cycles app/
+lint-imports --config pyproject.toml
+python -m pytest tests/architecture
 ```
 
 ### SDP - Stable Dependencies

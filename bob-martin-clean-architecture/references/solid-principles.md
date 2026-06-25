@@ -102,7 +102,8 @@ Strong signs:
 
 Red flags:
 
-- Domain/use case imports ORM, Express, Stripe SDK, SMTP client, queue client.
+- Domain/use case imports SQLAlchemy models/session, FastAPI objects, vendor SDK
+  clients, SMTP clients, queue clients, or the application container.
 - Core code calls a service locator or global container.
 - Tests must boot the framework to exercise policy.
 
@@ -141,8 +142,8 @@ Recommended language:
 
 Use precise claims:
 
-- "This violates DIP because the application layer imports a concrete TypeORM
-  repository."
+- "This violates DIP because the application layer imports a concrete SQLAlchemy
+  repository instead of an application-owned port."
 - "This is an SRP issue because payment routing and CSV export change for
   unrelated reasons."
 - "This interface is too broad for its clients; split by role."

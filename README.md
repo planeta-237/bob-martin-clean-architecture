@@ -1,7 +1,7 @@
 # Bob Martin Clean Architecture Skill
 
 A Codex skill for designing, reviewing, and explaining Robert C. Martin's
-canonical layered Clean Architecture.
+canonical layered Clean Architecture for Python services.
 
 The skill targets the layered/concentric model:
 
@@ -16,10 +16,10 @@ umbrella. Use it when you want an agent to design canonical Clean Architecture,
 review dependency direction and boundaries, score architecture fitness, or teach
 the concepts with concrete examples.
 
-For Python projects, the skill includes Pydantic v2 and FastAPI guidance for
-boundary DTOs, validation, serialization, settings, strict mode, `TypeAdapter`,
-routes, dependencies, response models, lifespan, testing, and keeping framework
-models from becoming the domain by default.
+The skill includes Python, Pydantic v2, FastAPI, and SQLAlchemy-oriented
+guidance for boundary DTOs, validation, serialization, settings, strict mode,
+`TypeAdapter`, routes, dependencies, response models, lifespan, testing, and
+keeping framework models from becoming the domain by default.
 
 ## Install
 

@@ -42,12 +42,12 @@ For each suspicious dependency, identify:
 
 | Violation | Evidence | Typical Severity |
 |-----------|----------|------------------|
-| ORM annotations on domain entity | `@Entity`, `@Column`, ActiveRecord base class in domain | P0/P1 |
-| HTTP types in use case | Express `Request`, Spring `ResponseEntity`, Flask request | P1 |
-| Vendor SDK in core policy | Stripe/S3/SMTP client imported in application/domain | P1 |
+| ORM annotations on domain entity | SQLAlchemy `Mapped`/`mapped_column`, SQLModel table model, or Active Record-style base in domain | P0/P1 |
+| HTTP types in use case | FastAPI/Starlette `Request`, `Response`, `Depends`, `HTTPException`, or `BackgroundTasks` | P1 |
+| Vendor SDK in core policy | `stripe`, `boto3`, `smtplib`, `httpx`, OpenAI/PydanticAI client, or queue client imported in application/domain | P1 |
 | Repository direct from controller | controller -> repo, no use case for business action | P1 |
 | Service locator in core | `container.get(...)`, `ServiceLocator.get(...)` | P1 |
-| Domain throws framework exception | `HttpException`, `SQLException`, ORM exception | P1/P2 |
+| Domain throws framework exception | `HTTPException`, `SQLAlchemyError`, driver error, ORM exception | P1/P2 |
 | Config read inside entity | environment/config provider in domain object | P2/P1 |
 
 Escalate severity when the dependency hides IO, blocks unit testing, or creates
@@ -63,22 +63,33 @@ When core code depends on a detail:
 4. Implement the port in an outer adapter.
 5. Wire the implementation in the composition root.
 
-```typescript
-// Application owns the need.
-export interface PaymentGateway {
-  authorize(amount: Money, token: PaymentToken): Promise<PaymentAuthorization>;
-}
+```python
+from dataclasses import dataclass
+from typing import Protocol
 
-export class ProcessPaymentUseCase {
-  constructor(private readonly payments: PaymentGateway) {}
-}
 
-// Infrastructure owns the detail.
-export class StripePaymentGateway implements PaymentGateway {
-  async authorize(amount: Money, token: PaymentToken): Promise<PaymentAuthorization> {
-    // Stripe SDK details live here.
-  }
-}
+@dataclass(frozen=True)
+class PaymentAuthorization:
+    id: str
+
+
+class PaymentGateway(Protocol):
+    async def authorize(self, amount: "Money", token: "PaymentToken") -> PaymentAuthorization:
+        """Application-owned port for payment authorization."""
+
+
+class ProcessPaymentUseCase:
+    def __init__(self, payments: PaymentGateway) -> None:
+        self._payments = payments
+
+    async def execute(self, amount: "Money", token: "PaymentToken") -> PaymentAuthorization:
+        return await self._payments.authorize(amount, token)
+
+
+class StripePaymentGateway:
+    async def authorize(self, amount: "Money", token: "PaymentToken") -> PaymentAuthorization:
+        # Stripe SDK details live in infrastructure.
+        ...
 ```
 
 ## Package Structure Examples
@@ -86,7 +97,7 @@ export class StripePaymentGateway implements PaymentGateway {
 Layer-first:
 
 ```text
-src/
+app/
   domain/
   application/
   adapters/
@@ -96,7 +107,7 @@ src/
 Feature-first with internal layers:
 
 ```text
-src/
+app/
   orders/
     domain/
     application/
@@ -114,34 +125,35 @@ cohesion, and change locality.
 
 ## Enforcement Ideas
 
-TypeScript:
+Use import-linter, grimp, pydeps, or a small pytest architecture test. Keep
+tooling as a guardrail; evidence from code still matters more than tool output.
 
-```javascript
-{
-  "rules": {
-    "boundaries/element-types": ["error", {
-      "default": "disallow",
-      "rules": [
-        { "from": "domain", "allow": ["domain"] },
-        { "from": "application", "allow": ["domain", "application"] },
-        { "from": "adapters", "allow": ["domain", "application", "adapters"] },
-        { "from": "infrastructure", "allow": ["domain", "application", "infrastructure"] }
-      ]
-    }]
-  }
-}
-```
+Example pytest check for a layer-first Python project:
 
-Java:
+```python
+from pathlib import Path
 
-```java
-layeredArchitecture()
-  .layer("Domain").definedBy("..domain..")
-  .layer("Application").definedBy("..application..")
-  .layer("Adapters").definedBy("..adapters..")
-  .layer("Infrastructure").definedBy("..infrastructure..")
-  .whereLayer("Domain").mayNotAccessAnyLayer()
-  .whereLayer("Application").mayOnlyAccessLayers("Domain");
+
+DOMAIN_ROOT = Path("app/domain")
+FORBIDDEN_IN_DOMAIN = (
+    "from app.api",
+    "from app.infrastructure",
+    "from fastapi",
+    "from sqlalchemy",
+    "import fastapi",
+    "import sqlalchemy",
+)
+
+
+def test_domain_does_not_import_outer_layers() -> None:
+    offenders: list[str] = []
+    for path in DOMAIN_ROOT.rglob("*.py"):
+        text = path.read_text(encoding="utf-8")
+        for forbidden in FORBIDDEN_IN_DOMAIN:
+            if forbidden in text:
+                offenders.append(f"{path}: {forbidden}")
+
+    assert offenders == []
 ```
 
 Use tooling suggestions as recommendations unless the user asks to implement

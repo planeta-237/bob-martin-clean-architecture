@@ -116,11 +116,11 @@ UseCaseInteractor
   -> ViewModel / HTTP response body
 ```
 
-The use case can call outward only through interfaces it owns:
+The use case can call outward only through ports it owns:
 
 ```text
 Use Case owns: OrderRepository, PaymentGateway, CreateOrderOutputBoundary
-Adapters implement: SqlOrderRepository, StripePaymentGateway, JsonPresenter
+Adapters implement: SqlAlchemyOrderRepository, StripePaymentGateway, JsonPresenter
 ```
 
 ## Canonical Project Shape
@@ -128,40 +128,38 @@ Adapters implement: SqlOrderRepository, StripePaymentGateway, JsonPresenter
 Use a layered shape by default:
 
 ```text
-src/
+app/
   entities/
     order/
-      Order.ts
-      Money.ts
-      OrderPolicy.ts
-  use-cases/
-    create-order/
-      CreateOrderInputBoundary.ts
-      CreateOrderInteractor.ts
-      CreateOrderRequestModel.ts
-      CreateOrderResponseModel.ts
-      CreateOrderOutputBoundary.ts
-      OrderGateway.ts
-  interface-adapters/
+      order.py
+      money.py
+      policy.py
+  use_cases/
+    create_order/
+      boundaries.py
+      interactor.py
+      request.py
+      response.py
+  interface_adapters/
     controllers/
-      CreateOrderController.ts
+      create_order_controller.py
     presenters/
-      CreateOrderPresenter.ts
+      create_order_presenter.py
     gateways/
-      SqlOrderGateway.ts
-      StripePaymentGateway.ts
-    view-models/
-      CreateOrderViewModel.ts
-  frameworks-drivers/
+      sqlalchemy_order_gateway.py
+      stripe_payment_gateway.py
+    view_models/
+      create_order_view_model.py
+  frameworks_drivers/
     web/
-      routes.ts
+      fastapi_routes.py
     persistence/
       orm/
       migrations/
     vendors/
       stripe/
   main/
-    composition-root.ts
+    composition_root.py
 ```
 
 For larger systems, grouping by business capability is acceptable only if each
@@ -202,16 +200,16 @@ Explain in this order:
 Small example:
 
 ```text
-Route -> Controller -> CreateOrderInputBoundary
-                         |
-                         v
-                 CreateOrderInteractor -> Order
-                         |
-                         v
-                  OrderGateway interface
-                         ^
-                         |
-                    SqlOrderGateway
+FastAPI route -> Controller -> CreateOrderInputBoundary
+                                   |
+                                   v
+                           CreateOrderInteractor -> Order
+                                   |
+                                   v
+                            OrderRepository port
+                                   ^
+                                   |
+                       SqlAlchemyOrderRepository
 ```
 
 ## Common Design Mistakes

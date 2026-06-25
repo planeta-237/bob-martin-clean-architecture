@@ -142,7 +142,7 @@ Risk signals:
 For FastAPI, default to this shape:
 
 ```text
-src/
+app/
   entities/
     order.py
   use_cases/
