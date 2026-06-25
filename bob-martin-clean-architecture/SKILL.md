@@ -6,14 +6,15 @@ description: >
   the Dependency Rule. Use when the user asks for architecture review, Clean
   Architecture compliance, dependency-rule validation, layer separation,
   SOLID/modularity review, architectural scoring, refactoring guidance,
-  framework/database decoupling, use-case boundary design, or help learning and
-  explaining Clean Architecture. Supports OOP and modular codebases in languages
-  such as TypeScript, Java, C#, Python, Kotlin, Go, and Ruby. In review mode,
-  produces evidence-based findings with severity, calibrated score breakdown,
-  positive aspects, and prioritized recommendations. In design/teaching mode,
-  produces canonical layered Clean Architecture with entities, interactors,
-  input/output boundaries, controllers, presenters, gateways, frameworks, Main,
-  trade-offs, and clear explanations.
+  framework/database decoupling, use-case boundary design, or learning Clean
+  Architecture. Supports modular TypeScript, Java, C#, Python, Kotlin, Go, and
+  Ruby codebases. For Python/Pydantic, applies current Pydantic v2 boundary,
+  validation, serialization, typing, settings, and DTO practices without making
+  Pydantic models the domain by default. In review mode, produces
+  evidence-based findings, calibrated scoring, positives, and priorities. In
+  design/teaching mode, produces canonical layered Clean Architecture with
+  entities, interactors, boundaries, controllers, presenters, gateways,
+  frameworks, Main, trade-offs, and clear explanations.
 ---
 
 # Bob Martin Clean Architecture
@@ -60,6 +61,9 @@ Do not force scoring in design or teaching mode unless the user asks for it.
 - If the user asks to design, first identify business capabilities, volatile
   details, use cases, domain rules, external actors, persistence, delivery
   mechanisms, and failure modes.
+- If the project uses Python or Pydantic, check whether Pydantic belongs to
+  interface adapters, framework DTOs, settings, or boundary validation before
+  placing it inside entities/use cases.
 
 ### 2. Classify or Design the Architecture
 
@@ -114,6 +118,7 @@ Load only the reference files needed for the current task:
 | `references/code-smells.md` | smells and refactoring recommendations |
 | `references/component-principles.md` | package/module cohesion, cycles, stability |
 | `references/security-checks.md` | sensitive data, credentials, payment, auth, audit concerns |
+| `references/python-pydantic.md` | Python or Pydantic codebases, DTOs, validation, settings, serialization |
 
 ### 4. For Review Mode: Score with Calibration
 
@@ -272,6 +277,9 @@ direction summary.
   Clean Architecture.
 - Deduct for framework convenience only when it crosses into core policy or
   makes testing/change materially harder.
+- In Python/Pydantic projects, do not reward Pydantic usage by itself. Reward it
+  when it improves boundary validation, serialization, settings, or adapter
+  clarity without leaking framework concerns into entities or use cases.
 
 ## Quick Diagnostic
 
