@@ -16,9 +16,10 @@ umbrella. Use it when you want an agent to design canonical Clean Architecture,
 review dependency direction and boundaries, score architecture fitness, or teach
 the concepts with concrete examples.
 
-For Python projects, the skill includes Pydantic v2 guidance for boundary DTOs,
-validation, serialization, settings, strict mode, `TypeAdapter`, and keeping
-Pydantic from becoming the domain model by default.
+For Python projects, the skill includes Pydantic v2 and FastAPI guidance for
+boundary DTOs, validation, serialization, settings, strict mode, `TypeAdapter`,
+routes, dependencies, response models, lifespan, testing, and keeping framework
+models from becoming the domain by default.
 
 ## Install
 

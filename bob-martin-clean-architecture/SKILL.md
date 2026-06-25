@@ -8,13 +8,13 @@ description: >
   SOLID/modularity review, architectural scoring, refactoring guidance,
   framework/database decoupling, use-case boundary design, or learning Clean
   Architecture. Supports modular TypeScript, Java, C#, Python, Kotlin, Go, and
-  Ruby codebases. For Python/Pydantic, applies current Pydantic v2 boundary,
-  validation, serialization, typing, settings, and DTO practices without making
-  Pydantic models the domain by default. In review mode, produces
-  evidence-based findings, calibrated scoring, positives, and priorities. In
-  design/teaching mode, produces canonical layered Clean Architecture with
-  entities, interactors, boundaries, controllers, presenters, gateways,
-  frameworks, Main, trade-offs, and clear explanations.
+  Ruby codebases. For Python/Pydantic/FastAPI, applies current boundary,
+  validation, serialization, DI, routing, tests, settings, and DTO practices
+  without making framework models the domain by default. In
+  review mode, produces evidence-based findings, calibrated scoring, positives,
+  and priorities. In design/teaching mode, produces canonical layered Clean
+  Architecture with entities, interactors, boundaries, controllers, presenters,
+  gateways, frameworks, Main, trade-offs, and clear explanations.
 ---
 
 # Bob Martin Clean Architecture
@@ -64,6 +64,10 @@ Do not force scoring in design or teaching mode unless the user asks for it.
 - If the project uses Python or Pydantic, check whether Pydantic belongs to
   interface adapters, framework DTOs, settings, or boundary validation before
   placing it inside entities/use cases.
+- If the project uses FastAPI, treat `FastAPI`, `APIRouter`, `Depends`,
+  `Request`, `Response`, `HTTPException`, middleware, and lifespan code as
+  outer-layer delivery/framework details unless there is explicit evidence
+  otherwise.
 
 ### 2. Classify or Design the Architecture
 
@@ -119,6 +123,7 @@ Load only the reference files needed for the current task:
 | `references/component-principles.md` | package/module cohesion, cycles, stability |
 | `references/security-checks.md` | sensitive data, credentials, payment, auth, audit concerns |
 | `references/python-pydantic.md` | Python or Pydantic codebases, DTOs, validation, settings, serialization |
+| `references/fastapi.md` | FastAPI apps, APIRouter, Depends, response models, lifespan, TestClient |
 
 ### 4. For Review Mode: Score with Calibration
 
@@ -280,6 +285,9 @@ direction summary.
 - In Python/Pydantic projects, do not reward Pydantic usage by itself. Reward it
   when it improves boundary validation, serialization, settings, or adapter
   clarity without leaking framework concerns into entities or use cases.
+- In FastAPI projects, do not reward framework convenience by itself. Reward it
+  when routes, dependencies, response models, lifespan, and tests stay at the
+  delivery/composition edge and preserve use-case/domain independence.
 
 ## Quick Diagnostic
 
