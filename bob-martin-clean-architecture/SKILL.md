@@ -46,6 +46,9 @@ Do not force scoring in design or teaching mode unless the user asks for it.
 - Avoid double-counting one root cause across many dimensions.
 - Adapt strictness to the stated goal: production merge review, teaching
   example, legacy triage, greenfield design, or lightweight sanity check.
+- In review mode, distinguish Clean Architecture review from a full engineering
+  review. State what was reviewed, what was not reviewed, and which follow-up
+  review passes would be needed for production confidence.
 - Do not auto-fix unless the user explicitly asks for implementation.
 
 ## Workflow
@@ -261,13 +264,24 @@ Overall: X.X/10 ([Grade])
 2. [P1] ...
 3. [P2] ...
 
+## Scope
+- Reviewed: source areas, files, snippets, docs, commands, or tests inspected.
+- Not reviewed: areas outside this Clean Architecture pass, such as full
+  security, performance, dependency vulnerabilities, database migrations,
+  runtime concurrency, load behavior, CI/CD, or exhaustive business correctness,
+  unless they were explicitly inspected.
+- Confidence: High/Medium/Low, based on project coverage and evidence quality.
+- Next review passes: security, tests, data consistency, runtime/concurrency,
+  operations, or other areas that matter for the project.
+
 ## Assumptions / Unknowns
 - ...
 ```
 
 For quick checks, keep the report short and explain that the score is approximate.
 For full project reviews, include a layer-by-layer checklist and dependency
-direction summary.
+direction summary. Always include a concise scope note so the user does not
+mistake an architecture review for a complete production audit.
 
 ## Calibration Rules
 
